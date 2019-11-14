@@ -1,4 +1,4 @@
-function [r, g, b, norm_image_data] = image_loader(image_data)
+function [r, g, b, n_row, n_col, norm_image_data] = image_loader(image_data)
     % Get number of row pixels and column pixels and feature size
     row = linspace(0, 1, size(image_data,1));
     col = linspace(0, 1, size(image_data,2));
