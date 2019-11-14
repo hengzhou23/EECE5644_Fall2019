@@ -2,7 +2,7 @@ close all; clear all; clc;
 
 N = 1000;
 n = 2;
-K=10;
+K = 10;
 p = [0.35, 0.65]; % Class priors [q-, q+]
 x = zeros(n, N);
 
