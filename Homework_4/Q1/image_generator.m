@@ -1,20 +1,17 @@
-function [image, x_vals, y_vals] = image_generator(data_T, img_width, img_height)
+function [image, x_vals, y_vals] = image_generator(data, img_width, img_height)
     color_list = [[0.25,0.25,0.5];
-                  [1,0,0];
+                  [0.9,0.1,0];
                   [0.2,0.1,0.7];
-                  [1,0,1];
-                  [0,1,1];];
-    colors  = {'.b','.k','.r','.g','.y'};
+                  [0.4,0.2,0.4];
+                  [0,2,1];];
     image = zeros(img_height, img_width, 3);
 
-    x_vals = rescale(data_T.X, 1, img_width);
-    y_vals = rescale(data_T.Y, 1, img_height);
-%     y_vals = linspace(0, 1, img_height);
-%     x_vals = linspace(0, 1, img_width);
-    
-    T_len = length(data_T.X);
+    x_vals = rescale(data.X, 1, img_width);
+    y_vals = rescale(data.Y, 1, img_height);
+
+    T_len = length(data.X);
 
     for i = 1:T_len
-        image(int16(y_vals(i)), int16(x_vals(i)), :) = color_list(int8(data_T.Class(i)), :);
+        image(int16(y_vals(i)), int16(x_vals(i)), :) = color_list(int8(data.Class(i)), :);
     end
 end
