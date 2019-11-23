@@ -1,4 +1,4 @@
-close all; clear; clc;
+close all; clear all; clc;
 T = readtable('Q1.csv');
 data = table2array(T);
 data_1 = T.Var1;
@@ -96,8 +96,8 @@ title('Confusion Matrix for the Bagging Decision Tree on the Test Data');
 figure;
 [x1_grid, x2_grid] = meshgrid((-4:.01:4), (-4:.01:4));
 grid_matrix = [x1_grid(:) x2_grid(:)];
-grid_label_set = zeros(length(grid_matrix), n);
-for i = 1:n
+grid_label_set = zeros(length(grid_matrix), i);
+for i = 1:i
     grid_label_set(:, i) = predict(bag_forest{i}, grid_matrix(:, 1:2));
 end
 grid_label = mode(grid_label_set, 2); % Find the most-vote classification result
@@ -110,7 +110,91 @@ hold on;
 scatter(X2, Y2, 'x', '.k');
 xlabel('Data 1');
 ylabel('Data 2');
-title('Scatter Plot of Data 1 and Data 2 with bagging boundaries');
+title('Scatter Plot of Data 1 and Data 2 with boosting boundaries');
+legend('Class -1 boundary', 'Class +1 boundary', 'Class -1', 'Class +1');
+axis([-4 4 -4 4]);
+grid on;
+hold off;
+
+%% Q1.d
+n = 7;
+dataTest = data(1:0.1*length(labels),:);
+len  = size(data,1);        % number of observations
+w    = ones(len, 1) / len;  % initial observation weights
+pop  = 1:len;               % population as indices of observations
+mdls = cell(m,2);           % save the trained trees & tree weight (a)
+ifW  = [w,zeros(len, 1)];   % array for the initial and final weights
+dataIdx = randsample(pop, len, true, w);
+dataTrain = data(dataIdx, :);
+
+for i = 1:n
+    % Train the tree
+    tempMdl = fitctree(dataTrain(:,1:2), dataTrain(:,3), 'MaxNumSplits', 11, 'PredictorSelection', 'allsplits', ...
+    'PruneCriterion', 'impurity', 'SplitCriterion', 'gdi');
+    mdls{i,1} = tempMdl; 
+    
+    % Get predicted labels
+    tempLabel = predict(tempMdl, dataTrain(:,1:end-1));
+    trueness = tempLabel ~= dataTrain(:,end);
+    
+    % Calculate the error
+    err = sum(w .* trueness) / sum(w);
+    
+    % Calculate the classifier weight
+    a = log((1 - err) / err);
+    mdls{i,2} = log((1 - err) / err);  % save the weight of the model
+    
+    % Update weights
+    w = w .* exp(a .* trueness);    % find un-normalized weights
+    w = w / sum(w);                 % normalize weights
+    if any(w < 0)
+        w(w<0)
+    end
+    if i == m
+        ifW(:,2) = w;
+    end
+end
+
+% Predict labels
+data = dataTest(:,1:2);
+allLabels = zeros(length(data), length(mdls));
+for m = 1:size(mdls,1)
+    a = mdls{m,2};  % model weight
+    allLabels = a .* predict(mdls{m,1}, data);
+end
+labels = sum(allLabels,2);
+labels = labels ./ labels(1);
+
+% Generate confusion matrix chart
+predictedLabels_set = zeros(length(dataTest), n);
+for i = 1:n
+    predictedLabels_set(:, i) = predict(bag_forest{i}, dataTest(:, 1:2));
+end
+predictedLabels = mode(predictedLabels_set, 2); % Find the most-vote classification result
+trueLabels = dataTest(:, 3);
+figure;
+cm = confusionchart(trueLabels, predictedLabels);
+title('Confusion Matrix for the Boosting Decision Tree on the Test Data');
+
+% Plot the decision boundaries for the decision tree
+figure;
+[x1_grid, x2_grid] = meshgrid((-4:.01:4), (-4:.01:4));
+grid_matrix = [x1_grid(:) x2_grid(:)];
+grid_label_set = zeros(length(grid_matrix), i);
+for i = 1:i
+    grid_label_set(:, i) = predict(bag_forest{i}, grid_matrix(:, 1:2));
+end
+grid_label = mode(grid_label_set, 2); % Find the most-vote classification result
+gscatter(x1_grid(:), x2_grid(:), grid_label, [0.5 0.5 1; 1 1 0.5]);
+ax = gca;
+ax.Layer = 'top';
+hold on;
+scatter(X1, Y1, 'o', '.r');
+hold on;
+scatter(X2, Y2, 'x', '.k');
+xlabel('Data 1');
+ylabel('Data 2');
+title('Scatter Plot of Data 1 and Data 2 with boosting boundaries');
 legend('Class -1 boundary', 'Class +1 boundary', 'Class -1', 'Class +1');
 axis([-4 4 -4 4]);
 grid on;
@@ -129,4 +213,3 @@ function [bag_forest] = build_bag_trees(data, n)
     end
 end
 
-%% Q1.d
