@@ -134,12 +134,13 @@ figure;
 [Xg, Yg] = meshgrid((-4:.01:4), (-4:.01:4));
 Xgrid = [Xg(:) Yg(:)];
 grid_label_set = zeros(length(Xgrid), i);
-grid_labels = zeros(length(Xgrid), 1);
+% Compute Output G(x) of each label
 for i = 1:level
     alpha = level_weights(i);
     grid_label_set(:, i) = alpha .* predict(adaboost_trees{i,1}, Xgrid(:, 1:2));
 end
-grid_labels = transpose(sign(sum(transpose(grid_label_set))));
+Gx = sign(sum(transpose(grid_label_set)));
+grid_labels = transpose(Gx);
 gscatter(Xg(:), Yg(:), grid_labels, [0.5 0.5 1; 1 1 0.5]);
 ax = gca;
 ax.Layer = 'top';
