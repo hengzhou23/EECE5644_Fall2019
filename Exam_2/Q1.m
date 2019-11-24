@@ -93,12 +93,12 @@ for i = 1:level
     % Fit a tree classifier with weight
     dataIdx = randsample(population, 900, true, w);
     dataTrain = X(dataIdx(:, 1:900), :);
-    temp_mdl = fitctree(dataTrain(:,1:2), dataTrain(:,3), 'MaxNumSplits', 11, 'PredictorSelection', 'allsplits', ...
+    mdl = fitctree(dataTrain(:,1:2), dataTrain(:,3), 'MaxNumSplits', 11, 'PredictorSelection', 'allsplits', ...
     'PruneCriterion', 'impurity', 'SplitCriterion', 'gdi');
-    adaboost_trees{i,1} = temp_mdl; 
+    adaboost_trees{i,1} = mdl; 
     
     % Compute the error
-    tempLabel = predict(temp_mdl, dataTrain(:,1:2));
+    tempLabel = predict(mdl, dataTrain(:,1:2));
     inequality = (tempLabel ~= dataTrain(:,3));
     err = sum(w .* inequality ) / sum(w);
     
@@ -125,6 +125,7 @@ for i = 1:level
 end
 Gx = sign(sum(transpose(label_set)));
 labels = transpose(Gx);
+
 % Generate confusion matrix chart
 trueLabels = dataTest(:, 3);
 figure;
@@ -136,7 +137,6 @@ figure;
 [Xg, Yg] = meshgrid((-4:.01:4), (-4:.01:4));
 Xgrid = [Xg(:) Yg(:)];
 grid_label_set = zeros(length(Xgrid), i);
-% Compute Output G(x) of each label
 for i = 1:level
     alpha = level_weights(i);
     grid_label_set(:, i) = alpha .* predict(adaboost_trees{i,1}, Xgrid(:, 1:2));
