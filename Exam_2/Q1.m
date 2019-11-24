@@ -109,11 +109,11 @@ hold off;
 %% Q1.d
 n = 7;
 dataTest = data(1:0.1*length(labels),:);
-len  = size(data,1);        % number of observations
-w    = ones(len, 1) / len;  % initial observation weights
-pop  = 1:len;               % population as indices of observations
-mdls = cell(m,2);           % save the trained trees & tree weight (a)
-ifW  = [w,zeros(len, 1)];   % array for the initial and final weights
+len  = size(data,1);
+w    = ones(len, 1) / len;
+pop  = 1:len;
+mdls = cell(m,2); 
+ifW  = [w,zeros(len, 1)];
 dataIdx = randsample(pop, len, true, w);
 dataTrain = data(dataIdx, :);
 
@@ -149,7 +149,7 @@ end
 data = dataTest(:,1:2);
 allLabels = zeros(length(data), length(mdls));
 for m = 1:size(mdls,1)
-    a = mdls{m,2};  % model weight
+    a = mdls{m,2};
     allLabels = a .* predict(mdls{m,1}, data);
 end
 labels = sum(allLabels,2);
