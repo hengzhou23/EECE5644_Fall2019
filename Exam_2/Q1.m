@@ -139,7 +139,7 @@ for i = 1:level
     alpha = level_weights(i);
     grid_label_set(:, i) = alpha .* predict(adaboost_trees{i,1}, Xgrid(:, 1:2));
 end
-grid_labels = transpose(sum(transpose(grid_label_set)));
+grid_labels = transpose(sign(sum(transpose(grid_label_set))));
 gscatter(Xg(:), Yg(:), grid_labels, [0.5 0.5 1; 1 1 0.5]);
 ax = gca;
 ax.Layer = 'top';
