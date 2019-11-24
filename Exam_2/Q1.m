@@ -1,4 +1,4 @@
-close all; clear all; clc;
+close all; clear; clc;
 T = readtable('Q1.csv');
 data = table2array(T);
 data_1 = T.Var1;
@@ -64,17 +64,7 @@ legend('Class -1 boundary', 'Class +1 boundary', 'Class -1', 'Class +1');
 axis([-4 4 -4 4]);
 grid on;
 hold off;
-% 
-% % Determine the loss
-% errTree = loss(mdl,dataTest);
-% disp([num2str(errTree),' = Classification Tree Loss',])
-% 
-% % Prune the tree and recalculate the loss
-% mdlPruned = prune(mdl,'Level',1);
-% 
-% % Determine the loss
-% errTreePruned = loss(mdlPruned,dataTest);
-% disp([num2str(errTreePruned),' = Pruned Classification Tree Loss',])
+
 
 %% Q1.c
 n = 7;
@@ -110,7 +100,7 @@ hold on;
 scatter(X2, Y2, 'x', '.k');
 xlabel('Data 1');
 ylabel('Data 2');
-title('Scatter Plot of Data 1 and Data 2 with boosting boundaries');
+title('Scatter Plot of Data 1 and Data 2 with bagging boundaries');
 legend('Class -1 boundary', 'Class +1 boundary', 'Class -1', 'Class +1');
 axis([-4 4 -4 4]);
 grid on;
