@@ -51,12 +51,12 @@ hold off;
 %% Q1.c
 n = 7;
 dataTest = X(1:0.1*length(labels),:);
-bag_forest = build_bag_forest(X, n); % Generate multiple trees
+bag_trees = build_bag_trees(X, n); % Generate multiple trees
 
 % Generate confusion matrix chart
 predictedLabels_set = zeros(length(dataTest), n);
 for i = 1:n
-    predictedLabels_set(:, i) = predict(bag_forest{i}, dataTest(:, 1:2));
+    predictedLabels_set(:, i) = predict(bag_trees{i}, dataTest(:, 1:2));
 end
 predictedLabels = mode(predictedLabels_set, 2); % Find the most-vote classification result
 trueLabels = dataTest(:, 3);
@@ -70,14 +70,14 @@ figure;
 Xgrid = [Xg(:) Yg(:)];
 grid_label_set = zeros(length(Xgrid), i);
 for i = 1:i
-    grid_label_set(:, i) = predict(bag_forest{i}, Xgrid(:, 1:2));
+    grid_label_set(:, i) = predict(bag_trees{i}, Xgrid(:, 1:2));
 end
 predicted_species = mode(grid_label_set, 2); % Find the most-vote classification result
 gscatter(Xg(:), Yg(:), predicted_species, [0.5 0.5 1; 1 1 0.5]);
 set(gca, 'Layer', 'top')
 hold on;
 plot_scatter(X);
-title('Scatter Plot with Boundaries by Classification with bagged trees');
+title('Scatter Plot with Boundaries by Classification with Bagging');
 legend('Class -1 boundary', 'Class +1 boundary', 'Class -1', 'Class +1');
 hold off;
 
@@ -133,7 +133,7 @@ labels = labels ./ labels(1);
 % Generate confusion matrix chart
 predictedLabels_set = zeros(length(dataTest), n);
 for i = 1:n
-    predictedLabels_set(:, i) = predict(bag_forest{i}, dataTest(:, 1:2));
+    predictedLabels_set(:, i) = predict(bag_trees{i}, dataTest(:, 1:2));
 end
 predictedLabels = mode(predictedLabels_set, 2); % Find the most-vote classification result
 trueLabels = dataTest(:, 3);
@@ -147,22 +147,16 @@ figure;
 Xgrid = [Xg(:) Yg(:)];
 grid_label_set = zeros(length(Xgrid), i);
 for i = 1:i
-    grid_label_set(:, i) = predict(bag_forest{i}, Xgrid(:, 1:2));
+    grid_label_set(:, i) = predict(bag_trees{i}, Xgrid(:, 1:2));
 end
 grid_label = mode(grid_label_set, 2); % Find the most-vote classification result
 gscatter(Xg(:), Yg(:), grid_label, [0.5 0.5 1; 1 1 0.5]);
 ax = gca;
 ax.Layer = 'top';
 hold on;
-scatter(X1, Y1, 'o', '.r');
-hold on;
-scatter(X2, Y2, 'x', '.k');
-xlabel('Data 1');
-ylabel('Data 2');
-title('Scatter Plot of Data 1 and Data 2 with boosting boundaries');
+plot_scatter(X);
+title('Scatter Plot with Boundaries by Classification with Boosting');
 legend('Class -1 boundary', 'Class +1 boundary', 'Class -1', 'Class +1');
-axis([-4 4 -4 4]);
-grid on;
 hold off;
 
 
