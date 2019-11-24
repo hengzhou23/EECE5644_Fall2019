@@ -90,10 +90,11 @@ initial_weight = initial_weight(1:900);
 population = 1:900;
 w = initial_weight(1:900);
 mdls = cell(n,2);
-dataIdx = randsample(population, 900, true, w);
-dataTrain = X(dataIdx(:, 1:900), :);
+
 for i = 1:level
     % Fit a tree classifier with weight
+    dataIdx = randsample(population, 900, true, w);
+    dataTrain = X(dataIdx(:, 1:900), :);
     temp_mdl = fitctree(dataTrain(:,1:2), dataTrain(:,3), 'MaxNumSplits', 11, 'PredictorSelection', 'allsplits', ...
     'PruneCriterion', 'impurity', 'SplitCriterion', 'gdi');
     mdls{i,1} = temp_mdl; 
