@@ -1,4 +1,4 @@
-close all; clear; clc;
+close all force; clear; clc;
 T = readtable('Q1.csv');
 X = table2array(T);
 labels = X(:,3);
@@ -101,7 +101,7 @@ for i = 1:level
     
     % Compute the error
     tempLabel = predict(temp_mdl, dataTrain(:,1:2));
-    inequality = (tempLabel ~= dataTrain(:,2));
+    inequality = (tempLabel ~= dataTrain(:,3));
     err = sum(w .* inequality ) / sum(w);
     
     % Compute the classifier weight
@@ -130,7 +130,7 @@ predictedLabels_set = zeros(length(dataTest), n);
 for i = 1:n
     predictedLabels_set(:, i) = predict(bag_trees{i}, dataTest(:, 1:2));
 end
-predictedLabels = mode(predictedLabels_set, 2); % Find the most-vote classification result
+predictedLabels = mode(predictedLabels_set, 2); 
 trueLabels = dataTest(:, 3);
 figure;
 cm = confusionchart(trueLabels, predictedLabels);
