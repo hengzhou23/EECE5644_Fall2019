@@ -42,7 +42,7 @@ view(mdl, 'Mode', 'Graph');
 predictedLabels = predict(mdl, dataTest(:, 1:2));
 trueLabels = dataTest(:, 3);
 figure;
-cm = confusionchart(trueLabels, predictedLabels);
+confusionchart(trueLabels, predictedLabels);
 title('Confusion Matrix for the Decision Tree on the Test Data');
 
 % Plot the decision boundaries for the decision tree
@@ -79,7 +79,7 @@ end
 predictedLabels = mode(predictedLabels_set, 2); % Find the most-vote classification result
 trueLabels = dataTest(:, 3);
 figure;
-cm = confusionchart(trueLabels, predictedLabels);
+confusionchart(trueLabels, predictedLabels);
 title('Confusion Matrix for the Bagging Decision Tree on the Test Data');
 
 % Plot the decision boundaries for the decision tree
@@ -119,13 +119,13 @@ dataTrain = data(dataIdx, :);
 
 for i = 1:n
     % Train the tree
-    tempMdl = fitctree(dataTrain(:,1:2), dataTrain(:,3), 'MaxNumSplits', 11, 'PredictorSelection', 'allsplits', ...
+    temp_mdl = fitctree(dataTrain(:,1:2), dataTrain(:,3), 'MaxNumSplits', 11, 'PredictorSelection', 'allsplits', ...
     'PruneCriterion', 'impurity', 'SplitCriterion', 'gdi');
-    mdls{i,1} = tempMdl; 
+    mdls{i,1} = temp_mdl; 
     
     % Get predicted labels
-    tempLabel = predict(tempMdl, dataTrain(:,1:end-1));
-    trueness = tempLabel ~= dataTrain(:,end);
+    tempLabel = predict(temp_mdl, dataTrain(:,1:2));
+    trueness = tempLabel ~= dataTrain(:,2);
     
     % Calculate the error
     err = sum(w .* trueness) / sum(w);
