@@ -110,7 +110,7 @@ for i = 1:level
     w = w .* exp(a .* inequality);    % compute un-normalized weights
     w = w / sum(w);                 % renormalize the weights
     
-    if any(w<=0)
+    if any(a<=0)
         w = initial_weight;
     end
 end
