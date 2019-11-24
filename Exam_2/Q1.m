@@ -84,11 +84,9 @@ hold off;
 %% Q1.d
 level = 7;
 dataTest = X(1:0.1*length(labels),:);
-N = length(X(:,1));
-initial_weight = ones(N, 1) / N; % initial weight
-initial_weight = initial_weight(1:900);
+initial_weight = ones(900, 1) / 900; % initial weight
 population = 1:900;
-w = initial_weight(1:900);
+w = initial_weight;
 mdls = cell(n,2);
 
 for i = 1:level
@@ -104,7 +102,7 @@ for i = 1:level
     inequality = (tempLabel ~= dataTrain(:,3));
     err = sum(w .* inequality ) / sum(w);
     
-    % Compute the classifier weight
+    % Compute the level weight
     a = log((1 - err) / err);
     mdls{i,2} = a;
     
@@ -114,44 +112,39 @@ for i = 1:level
 end
 final_weight = w;
 initial_final_W = [initial_weight, final_weight];
+level_weights = [mdls{:,2}] / sum([mdls{:,2}])
+
 
 % Predict labels
-X = dataTest(:,1:2);
-allLabels = zeros(length(X), length(mdls));
-for m = 1:size(mdls,1)
-    a = mdls{m,2};
-    allLabels = a .* predict(mdls{m,1}, X);
+all_labels = zeros(length(dataTest));
+for m = 1:7
+    alpha = level_weights(m);
+    all_labels = alpha .* predict(mdls{m,1}, dataTest(:,1:2));
 end
-labels = sum(allLabels,2);
-labels = labels ./ labels(1);
+sum_all_labels = sum(all_labels);
+labels = sign(all_labels);
 
-% Generate confusion matrix chart
-predictedLabels_set = zeros(length(dataTest), n);
-for i = 1:n
-    predictedLabels_set(:, i) = predict(bag_trees{i}, dataTest(:, 1:2));
-end
-predictedLabels = mode(predictedLabels_set, 2); 
 trueLabels = dataTest(:, 3);
 figure;
-cm = confusionchart(trueLabels, predictedLabels);
+confusionchart(trueLabels, labels);
 title('Confusion Matrix for the Boosting Decision Tree on the Test Data');
 
-% Plot the decision boundaries for the decision tree
-figure;
-[Xg, Yg] = meshgrid((-4:.01:4), (-4:.01:4));
-Xgrid = [Xg(:) Yg(:)];
-grid_label_set = zeros(length(Xgrid), i);
-for i = 1:i
-    grid_label_set(:, i) = predict(bag_trees{i}, Xgrid(:, 1:2));
-end
-grid_label = mode(grid_label_set, 2); % Find the most-vote classification result
-gscatter(Xg(:), Yg(:), grid_label, [0.5 0.5 1; 1 1 0.5]);
-ax = gca;
-ax.Layer = 'top';
-hold on;
-plot_scatter(X);
-title('Scatter Plot with Boundaries by Classification with Boosting');
-legend('Class -1 boundary', 'Class +1 boundary', 'Class -1', 'Class +1');
-hold off;
-
-
+% % Plot the decision boundaries for the decision tree
+% figure;
+% [Xg, Yg] = meshgrid((-4:.01:4), (-4:.01:4));
+% Xgrid = [Xg(:) Yg(:)];
+% grid_label_set = zeros(length(Xgrid), i);
+% for i = 1:i
+%     grid_label_set(:, i) = predict(bag_trees{i}, Xgrid(:, 1:2));
+% end
+% grid_label = mode(grid_label_set, 2); % Find the most-vote classification result
+% gscatter(Xg(:), Yg(:), grid_label, [0.5 0.5 1; 1 1 0.5]);
+% ax = gca;
+% ax.Layer = 'top';
+% hold on;
+% plot_scatter(X);
+% title('Scatter Plot with Boundaries by Classification with Boosting');
+% legend('Class -1 boundary', 'Class +1 boundary', 'Class -1', 'Class +1');
+% hold off;
+% 
+% 
