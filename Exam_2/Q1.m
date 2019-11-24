@@ -116,14 +116,14 @@ level_weights = [adaboost_trees{:,2}] / sum([adaboost_trees{:,2}])
 
 
 % Predict labels
-all_labels = zeros(length(dataTest));
-for m = 1:7
-    alpha = level_weights(m);
-    all_labels = alpha .* predict(adaboost_trees{m,1}, dataTest(:,1:2));
+label_set = zeros(length(dataTest), i);
+% Compute Output G(x) of each label
+for i = 1:level
+    alpha = level_weights(i);
+    label_set(:, i) = alpha .* predict(adaboost_trees{i,1}, dataTest(:,1:2));
 end
-sum_all_labels = sum(all_labels);
-labels = sign(all_labels);
-
+Gx = sign(sum(transpose(label_set)));
+labels = transpose(Gx);
 trueLabels = dataTest(:, 3);
 figure;
 confusionchart(trueLabels, labels);
