@@ -2,7 +2,7 @@ function [bag_forest] = build_bag_forest(data, n)
     bag_forest = cell(n, 1);
     for i = 1:n
         % Generate new training data set
-        random_data_index = randi(length(data), 1, 0.9*length(data)); 
+        random_data_index = randi([1, length(data)], 0.9*length(data), 1); % Get a 900x1 random index from data
         dataTrain = data(random_data_index,:);
 
         % Train a tree(same method to 1.b) and add it to the forest

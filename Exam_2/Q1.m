@@ -8,7 +8,7 @@ labels = X(:,3);
 % label -1 and marker ¡®x¡¯ and color ¡®black¡¯ for class label 1 with grid on
 % and axies labelled
 figure;
-gscatter(X(:,1), X(:,2), X(:,3), 'rk', 'ox');
+gscatter(X(:,1), X(:,2), labels, 'rk', 'ox');
 xlabel('Data 1');
 ylabel('Data 2');
 title('Scatter Plot of Data 1 (X) and Data 2 (Y)');
@@ -51,7 +51,7 @@ hold off;
 %% Q1.c
 n = 7;
 dataTest = X(1:0.1*length(labels),:);
-bag_forest = build_bag_forest(X, n);
+bag_forest = build_bag_forest(X, n); % Generate multiple trees
 
 % Generate confusion matrix chart
 predictedLabels_set = zeros(length(dataTest), n);
