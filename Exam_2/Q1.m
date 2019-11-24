@@ -82,43 +82,37 @@ legend('Class -1 boundary', 'Class +1 boundary', 'Class -1', 'Class +1');
 hold off;
 
 %% Q1.d
-n = 7;
+level = 7;
 dataTest = X(1:0.1*length(labels),:);
-len  = size(X,1);
-w    = ones(len, 1) / len;
-pop  = 1:len;
-mdls = cell(n,2); 
-ifW  = [w,zeros(len, 1)];
-dataIdx = randsample(pop, len, true, w);
-dataTrain = X(dataIdx, :);
-
-for i = 1:n
-    % Train the tree
+N = length(X(:,1));
+initial_weight = ones(N, 1) / N; % initial weight
+initial_weight = initial_weight(1:900);
+population = 1:900;
+w = initial_weight(1:900);
+mdls = cell(n,2);
+dataIdx = randsample(population, 900, true, w);
+dataTrain = X(dataIdx(:, 1:900), :);
+for i = 1:level
+    % Fit a tree classifier with weight
     temp_mdl = fitctree(dataTrain(:,1:2), dataTrain(:,3), 'MaxNumSplits', 11, 'PredictorSelection', 'allsplits', ...
     'PruneCriterion', 'impurity', 'SplitCriterion', 'gdi');
     mdls{i,1} = temp_mdl; 
     
-    % Get predicted labels
+    % Compute the error
     tempLabel = predict(temp_mdl, dataTrain(:,1:2));
-    trueness = (tempLabel ~= dataTrain(:,2));
+    inequality = (tempLabel ~= dataTrain(:,2));
+    err = sum(w .* inequality ) / sum(w);
     
-    % Calculate the error
-    err = sum(w .* trueness) / sum(w);
-    
-    % Calculate the classifier weight
+    % Compute the classifier weight
     a = log((1 - err) / err);
-    mdls{i,2} = log((1 - err) / err);  % save the weight of the model
+    mdls{i,2} = a;
     
     % Update weights
-    w = w .* exp(a .* trueness);    % find un-normalized weights
-    w = w / sum(w);                 % normalize weights
-    if any(w < 0)
-        w(w<0)
-    end
-    if i == n
-        ifW(:,2) = w;
-    end
+    w = w .* exp(a .* inequality);    % compute un-normalized weights
+    w = w / sum(w);                 % renormalize the weights
 end
+final_weight = w;
+initial_final_W = [initial_weight, final_weight];
 
 % Predict labels
 X = dataTest(:,1:2);
