@@ -108,7 +108,7 @@ for i = 1:level
     
     % Update weights
     w = w .* exp(a .* inequality);    % compute un-normalized weights
-    w = w / sum(w);                 % renormalize the weights
+    w = w / sum(w);                 % renormalize the weights to add up to one
     
     % Sometimes error calculated result is zero, which makes level weight NaN
     % In that case, Try run the code again
