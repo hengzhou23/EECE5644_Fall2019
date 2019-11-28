@@ -50,7 +50,7 @@ hold off;
 
 %% Q1.c
 n = 7;
-dataTest = X(1:0.1*length(labels),:); % Test data is the first 10 percent of data
+dataTest = X(1:0.1*length(labels),:);
 bag_trees = build_bag_trees(X, n); % Generate multiple trees
 
 % Generate confusion matrix chart
@@ -107,11 +107,12 @@ for i = 1:level
     % Update weights
     w = w .* exp(a .* inequality);    % compute un-normalized weights
     w = w / sum(w);                 % renormalize the weights to add up to one
- 
+    
+    % Sometimes error calculated result is zero, which makes level weight NaN
+    % In that case, Try run the code again
+    
     adaboost_trees{i,1} = mdl;
     adaboost_trees{i,2} = a;
-    % Sometimes error calculated result is zero, which makes level weight NaN
-    % In that case, just run the code again.
 end
 final_weight = w;
 initial_final_W = [initial_weight, final_weight];
